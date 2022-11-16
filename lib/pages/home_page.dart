@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:noted/style/app_style.dart';
+import 'package:noted/widgets/note_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -38,26 +39,32 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 20.0,
             ),
-            StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection("Notes").snapshots(),
-              builder: (context, AsyncSnapshot snapshot) {
-                // check connection status and display progress bar until data is loaded completely
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (snapshot.hasData) {
-                  return GridView(
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance.collection("Notes").snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  // check connection status and display progress bar until data is loaded completely
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    return GridView(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2));
-                }
-                return Text(
-                  "Notes not available",
-                  style: GoogleFonts.nunito(color: Colors.white),
-                );
-              },
+                          crossAxisCount: 2),
+                      children: snapshot.data!.docs
+                          .map((note) => noteCard(() {}, note))
+                          .toList(),
+                    );
+                  }
+                  return Text(
+                    "Notes not available",
+                    style: GoogleFonts.nunito(color: Colors.white),
+                  );
+                },
+              ),
             ),
           ],
         ),
