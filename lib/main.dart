@@ -1,15 +1,33 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:noted/pages/home_page.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // initialise app
-  await Firebase.initializeApp();
-  runApp(const MyApp());
+void main() async {
+  // initialise all widgets
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // check if current platform is web
+  if (kIsWeb) {
+    // initialise Firebase for IOS, Android
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyBdJ5MbODcHtYZP0A-yRi4RtpvVQSNv11I",
+            authDomain: "noted-flutter.firebaseapp.com",
+            projectId: "noted-flutter",
+            storageBucket: "noted-flutter.appspot.com",
+            messagingSenderId: "803102434031",
+            appId: "1:803102434031:web:32d18ec6bd25661078711a"));
+  } else {
+    // initialise Firebase for Web
+    await Firebase.initializeApp();
+  }
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
