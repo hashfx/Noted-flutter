@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:noted/style/app_style.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,6 +15,53 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppStyle.mainColor,
+      appBar: AppBar(
+        elevation: 0.0,
+        title: Text("Send Notes"),
+        centerTitle: true,
+        backgroundColor: AppStyle.mainColor,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Recent Notes",
+              style: GoogleFonts.roboto(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection("Notes").snapshots(),
+              builder: (context, AsyncSnapshot snapshot) {
+                // check connection status and display progress bar until data is loaded completely
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (snapshot.hasData) {
+                  return GridView(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2));
+                }
+                return Text(
+                  "Notes not available",
+                  style: GoogleFonts.nunito(color: Colors.white),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
