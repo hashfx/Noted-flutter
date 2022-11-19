@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> {
                       children: snapshot.data!.docs
                           .map((note) => noteCard(() {}, note))
                           .toList(),
+                      // .toList(),
                     );
                   }
                   return Text(
@@ -65,9 +66,13 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-            ),
+            )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        label: Text("Add Note"),
       ),
     );
   }
