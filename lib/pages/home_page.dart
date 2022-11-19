@@ -73,6 +73,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         label: Text("Add Note"),
+        icon: Icon(Icons.add),
       ),
     );
   }
