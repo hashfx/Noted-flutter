@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:noted/pages/note_reader.dart';
 import 'package:noted/style/app_style.dart';
 import 'package:noted/widgets/note_card.dart';
 
@@ -55,7 +56,14 @@ class _HomePageState extends State<HomePage> {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2),
                       children: snapshot.data!.docs
-                          .map((note) => noteCard(() {}, note))
+                          .map((note) => noteCard(() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          NoteReaderScreen(note),
+                                    ));
+                              }, note))
                           .toList(),
                       // .toList(),
                     );
