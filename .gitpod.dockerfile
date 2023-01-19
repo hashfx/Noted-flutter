@@ -1,85 +1,36 @@
-FROM gitpod/workspace-full-vnc
-                    
-USER gitpod
+FROM gitpod/workspace-full:latest
 
-# Install custom tools, runtime, etc. using apt-get
-# For example, the command below would install "bastet" - a command line tetris clone:
-#
-# RUN sudo apt-get -q update && #     sudo apt-get install -yq bastet && #     sudo rm -rf /var/lib/apt/lists/*
-#
-# More information: https://www.gitpod.io/docs/42_config_docker/
-
-ENV ANDROID_HOME /opt/android-sdk-linux
+ENV ANDROID_HOME=/home/gitpod/android-sdk \
+    FLUTTER_HOME=/home/gitpod/flutter
 
 USER root
 
-RUN apt update -qq && apt install zip unzip
-
-RUN cd /opt && \
-    wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip && \
-    unzip -q *.zip -d ${ANDROID_HOME} && \
-    rm *.zip
-
-RUN chmod -R 777 ${ANDROID_HOME}
-
-RUN apt clean -qq
+RUN curl https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    curl https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list && \
+    apt-get update && \
+    apt-get -y install build-essential dart libkrb5-dev gcc make gradle android-tools-adb android-tools-fastboot openjdk-8-jdk && \
+    apt-get clean && \
+    apt-get -y autoremove && \
+    apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/*;
 
 USER gitpod
 
-ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
+RUN cd /home/gitpod && \
+    wget -qO flutter_sdk.tar.xz \
+    https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.9.1+hotfix.4-stable.tar.xz &&\
+    tar -xvf flutter_sdk.tar.xz && \
+    rm -f flutter_sdk.tar.xz
 
-RUN bash -c "source ~/.sdkman/bin/sdkman-init.sh && \
-                sdk install java 8.0.232-open"
+RUN cd /home/gitpod && \
+    wget -qO android_studio.zip \
+    https://dl.google.com/dl/android/studio/ide-zips/3.3.0.20/android-studio-ide-182.5199772-linux.zip && \
+    unzip android_studio.zip && \
+    rm -f android_studio.zip
 
-#RUN yes | sdkmanager --licenses
-
-#RUN yes | sdkmanager --update --channel=3
-# Please keep all sections in descending order!
-#RUN yes | sdkmanager \
-#    "platforms;android-29" \
-#    "platforms;android-28" \
-#    "platforms;android-27" \
-#    "platforms;android-26" \
-#    "platforms;android-25" \
-#    "platforms;android-24" \
-#    "platforms;android-23" \
-#    "platforms;android-22" \
-#    "platforms;android-21" \
-#    "platforms;android-19" \
-#    "platforms;android-17" \
-#    "platforms;android-15" \
-#    "build-tools;29.0.2" \
-#    "build-tools;29.0.1" \
-#    "build-tools;29.0.0" \
-#    "build-tools;28.0.3" \
-#    "build-tools;28.0.2" \
-#    "build-tools;28.0.1" \
-#    "build-tools;28.0.0" \
-#    "build-tools;27.0.3" \
-#    "build-tools;27.0.2" \
-#    "build-tools;27.0.1" \
-#    "build-tools;27.0.0" \
-#    "build-tools;26.0.2" \
-#    "build-tools;26.0.1" \
-#    "build-tools;25.0.3" \
-#    "build-tools;24.0.3" \
-#    "build-tools;23.0.3" \
-#    "build-tools;22.0.1" \
-#    "build-tools;21.1.2" \
-#    "build-tools;19.1.0" \
-#    "build-tools;17.0.0" \
-#    "system-images;android-29;google_apis;x86" \
-#    "system-images;android-28;google_apis;x86" \
-#    "system-images;android-26;google_apis;x86" \
-#    "system-images;android-25;google_apis;armeabi-v7a" \
-#    "system-images;android-24;default;armeabi-v7a" \
-#    "system-images;android-22;default;armeabi-v7a" \
-#    "system-images;android-19;default;armeabi-v7a" \
-#    "extras;android;m2repository" \
-#    "extras;google;m2repository" \
-#    "extras;google;google_play_services" \
-#    "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" \
-#    "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.1" \
-#    "add-ons;addon-google_apis-google-23" \
-#    "add-ons;addon-google_apis-google-22" \
-#    "add-ons;addon-google_apis-google-21"
+# TODO(tianhaoz95): make the name of the SDK file into an environment variable to avoid maintainance issue
+RUN mkdir -p /home/gitpod/android-sdk && \
+    cd /home/gitpod/android-sdk && \
+    wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip && \
+    unzip sdk-tools-linux-4333796.zip && \
+    rm -f sdk-tools-linux-4333796.zip
